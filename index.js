@@ -74,6 +74,19 @@ const employeeName = [
 },
 ];
 
+const updateRole = [
+  {
+    type: 'input',
+    message: 'What is the id of the employee?',
+    name: 'employeeId',
+},
+{
+  type: 'input',
+  message: 'What would you like to change the role id to?',
+  name: 'employeeRoleId',
+},
+];
+
 
 const doThis = () =>  {
   inquirer.prompt(homePage).then((data) => {
@@ -152,14 +165,16 @@ const doThis = () =>  {
               )}
             
           else if (data.home === 'Update an employee role'){
-                db.query('SELECT * FROM FIX!!!', (err, data7) => {
+            inquirer.prompt(updateRole).then((answer) => {
+                db.query(`UPDATE employee SET role_id = '${answer.employeeRoleId}' WHERE employee.id = '${answer.employeeId}' `, (err, data7) => {
                   if (err){
                     return console.log('ERROR')
                   }
                   else console.log('All good')
                   console.log(data7)
                   doThis();
-                })}  
+               
+                })})}  
       })};
       
     doThis();
