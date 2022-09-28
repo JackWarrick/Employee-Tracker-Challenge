@@ -37,15 +37,40 @@ const roleName = [
   {
     type: 'input',
     message: 'What is the name of the role?',
-    name: 'roleName',
+    name: 'roleName', 
+},
+{
+  type: 'input',
+  message: 'What is the salary of the role?',
+  name: 'roleSalary', 
+},
+{
+  type: 'input',
+  message: 'What is the Department Number of the role?',
+  name: 'roleDeptNumber', 
 },
 ];
 
 const employeeName = [
   {
     type: 'input',
-    message: 'What is the name of the employee?',
+    message: 'What is the first name of the employee?',
     name: 'employeeFirstName',
+},
+{
+  type: 'input',
+  message: 'What is the last name of the employee?',
+  name: 'employeeLastName',
+},
+{
+  type: 'input',
+  message: 'What is the role id of the employee?',
+  name: 'employeeRoleId',
+},
+{
+  type: 'input',
+  message: 'What is the manager id of the employee?',
+  name: 'employeeManagerId',
 },
 ];
 
@@ -88,7 +113,7 @@ const doThis = () =>  {
 
           else if (data.home === 'Add a department'){
             inquirer.prompt(departmentName).then((answer) => {
-              db.query(`INSERT INTO department (department_name) values (${answer.deptName});`, (err, data4) => {
+              db.query(`INSERT INTO department (department_name) values ('${answer.deptName}')`, (err, data4) => {
                 if (err){
                   console.log(err)
                   return console.log('ERROR')
@@ -103,8 +128,9 @@ const doThis = () =>  {
 
           else if (data.home === 'Add a role'){
             inquirer.prompt(roleName).then((answer) => {
-            db.query(`INSERT INTO roles (title) values (${answer.roleName})`, (err, data5) => {
+            db.query(`INSERT INTO roles (title, salary, Department) values ('${answer.roleName}', '${answer.roleSalary}', '${answer.roleDeptNumber}')`, (err, data5) => {
               if (err){
+                console.log(err)
                 return console.log('ERROR')
               }
               else console.log('All good')
@@ -115,7 +141,7 @@ const doThis = () =>  {
 
           else if (data.home === 'Add an employee'){
             inquirer.prompt(employeeName).then((answer) => {
-              db.query(`INSERT INTO employee (first_name) values (${answer.employeeFirstName})`, (err, data6) => {
+              db.query(`INSERT INTO employee (first_name, last_name, role_id, manager_id) values ('${answer.employeeFirstName}', '${answer.employeeLastName}', '${answer.employeeRoleId}', '${answer.employeeManagerId}')`, (err, data6) => {
                 if (err){
                   return console.log('ERROR')
                 }
