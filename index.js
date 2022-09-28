@@ -1,12 +1,9 @@
-//QUESTIONS: how to present the data in the say that isn't JSON? 
-//How to get the manager_id key assigned to a name so it will change to that instead of the number - or wait no the manager might be like the same as the id they are all assigned so I can change that in seeds to not be the same
-//3. Connecting the role ids and manager ids with the names they correspond with
-//4. should it do the autoincrement on ids?
-
+//Require everything we need to include to run the application
 const mysql = require('mysql2');
 var inquirer = require('inquirer');
 const cTable = require('console.table');
 
+//Create the connection to the database created in the schema
 const db = mysql.createConnection(
     {
       user: 'root',
@@ -16,6 +13,7 @@ const db = mysql.createConnection(
     console.log(`Connected to the employee_db database.`)
   );
 
+  //List of choices for the user to select from at the start
   const homePage = [
     {
       type: 'list',
@@ -25,6 +23,7 @@ const db = mysql.createConnection(
   }
 ];
 
+//Question for adding new deparment pathway
 const departmentName = [
   {
     type: 'input',
@@ -33,6 +32,7 @@ const departmentName = [
 },
 ];
 
+//Questions for adding new role pathway
 const roleName = [
   {
     type: 'input',
@@ -51,6 +51,7 @@ const roleName = [
 },
 ];
 
+//Questions for adding new employee pathway
 const employeeName = [
   {
     type: 'input',
@@ -74,6 +75,7 @@ const employeeName = [
 },
 ];
 
+//Questions for updating an employee
 const updateRole = [
   {
     type: 'input',
@@ -87,19 +89,22 @@ const updateRole = [
 },
 ];
 
-
+//Master function - really the only function with a lot of paths inside of it
 const doThis = () =>  {
   inquirer.prompt(homePage).then((data) => {
+    //View all departments if user selects that
       if (data.home === 'View all departments'){
         db.query('SELECT * FROM department', (err, data1) => {
+          //check for errors
           if (err){
             return console.log('ERROR')
           }
+          //use console.table for the formatting of viewed information
           else console.log('All good')
           console.table(data1)
           doThis();
         })}
-
+        //View all roles if user selects that
           else if (data.home === 'View all roles'){
           db.query('SELECT roles.id,title,salary,department_name FROM roles JOIN department ON roles.Department=department.id'//join the department table in the quote//
           , (err, data2) => {
@@ -112,6 +117,7 @@ const doThis = () =>  {
             doThis();
           })}
 
+          //View all employees if user selects that
           else if (data.home === 'View all employees'){
             db.query('SELECT * FROM employee JOIN roles ON employee.role_id=roles.id JOIN department ON roles.Department=department.id', (err, data3) => {
               if (err){
@@ -123,7 +129,7 @@ const doThis = () =>  {
               doThis();
             })}  
 
-
+          //Add a department with INSERT INTO if user selects that
           else if (data.home === 'Add a department'){
             inquirer.prompt(departmentName).then((answer) => {
               db.query(`INSERT INTO department (department_name) values ('${answer.deptName}')`, (err, data4) => {
@@ -134,11 +140,10 @@ const doThis = () =>  {
                 else console.log('All good')
                 console.log(data4)
                 doThis();
-                //ERROR HERE
               })}  
               )}
 
-
+            //Add a role with INSERT INTO if user selects that
           else if (data.home === 'Add a role'){
             inquirer.prompt(roleName).then((answer) => {
             db.query(`INSERT INTO roles (title, salary, Department) values ('${answer.roleName}', '${answer.roleSalary}', '${answer.roleDeptNumber}')`, (err, data5) => {
@@ -152,6 +157,7 @@ const doThis = () =>  {
             })}  
             )}
 
+          //Add an employee with INSERT INTO if user selects that
           else if (data.home === 'Add an employee'){
             inquirer.prompt(employeeName).then((answer) => {
               db.query(`INSERT INTO employee (first_name, last_name, role_id, manager_id) values ('${answer.employeeFirstName}', '${answer.employeeLastName}', '${answer.employeeRoleId}', '${answer.employeeManagerId}')`, (err, data6) => {
@@ -163,7 +169,8 @@ const doThis = () =>  {
                 doThis();
               })}  
               )}
-            
+           
+          //Update an employee role with UPDATE if user selects it
           else if (data.home === 'Update an employee role'){
             inquirer.prompt(updateRole).then((answer) => {
                 db.query(`UPDATE employee SET role_id = '${answer.employeeRoleId}' WHERE employee.id = '${answer.employeeId}' `, (err, data7) => {
@@ -173,14 +180,7 @@ const doThis = () =>  {
                   else console.log('All good')
                   console.log(data7)
                   doThis();
-               
                 })})}  
       })};
       
     doThis();
-
-
-  // NEED TO 
-  // 1. run inquirer to execute what the user wants
-  // - View all departments - View all roles - View all employees - Add a department - Add a role - Add an employee - Update an employee role
-  // 2. User if statements like in the team profile generator challenge, use db.query with the methods like 'SELECT * FROM department' for showing all or `DELETE FROM favorite_books WHERE id = ?` - look at the mini project - or update one to change the database
